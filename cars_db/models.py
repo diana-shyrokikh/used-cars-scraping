@@ -14,13 +14,13 @@ class Car(models.Model):
     phone_number = models.CharField(
         max_length=255
     )
-    image_url = models.URLField()
+    image_url = models.URLField(null=True)
     images_count = models.IntegerField()
     car_number = models.CharField(
         max_length=255, null=True
     )
     car_vin = models.CharField(
-        max_length=255
+        max_length=255, null=True
     )
     datetime_found = models.DateTimeField(
         auto_now_add=True
