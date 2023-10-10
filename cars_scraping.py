@@ -20,6 +20,7 @@ from utils import (
     get_phone_number,
     is_cookies_notification,
     get_last_page,
+    get_image,
 )
 
 BASE_URL = "https://auto.ria.com/uk/car/used/"
@@ -39,7 +40,6 @@ def get_webdriver() -> WebDriver:
     chrome_options.add_argument('--disable-dev-shm-usage')
 
     return webdriver.Chrome(service=service, options=chrome_options)
-
 
 
 def get_page(
@@ -68,6 +68,10 @@ def get_car_list(driver: WebDriver, page: int) -> list[str]:
 
 def get_car(driver: WebDriver, url: str) -> None:
     driver.get(url)
+    username = get_username(driver)
+
+    if not username:
+        return None
 
     title = driver.find_element(
         By.TAG_NAME, "h1"
@@ -86,13 +90,7 @@ def get_car(driver: WebDriver, url: str) -> None:
         "div.base-information.bold > span"
     ).text) * one_thousand
 
-    username = get_username(driver)
-
-    image_url = driver.find_elements(
-        By.CSS_SELECTOR,
-        "div.carousel-inner._flex > div.photo-620x465.loaded > picture > img"
-    )[0].get_attribute("src")
-
+    image_url = get_image(driver)
     images_count = get_images_count(driver)
     car_number = get_car_number(driver)
     car_vin = get_car_vin(driver)

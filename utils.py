@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from cars_db.models import Car
 
 
-def get_username(driver: WebDriver) -> str:
+def get_username(driver: WebDriver) -> str | None:
     username = driver.find_elements(
         By.CSS_SELECTOR,
         "h4.seller_info_name > a"
@@ -16,10 +16,37 @@ def get_username(driver: WebDriver) -> str:
     if username:
         return username[0].text
 
-    return driver.find_element(
+    else:
+        username = driver.find_elements(
+            By.CSS_SELECTOR,
+            "div.seller_info_name.bold"
+        )
+
+        if username:
+            return username[0].text
+
+    return None
+
+
+def get_image(driver: WebDriver) -> str | None:
+    image_url = driver.find_elements(
         By.CSS_SELECTOR,
-        "div.seller_info_name.bold"
-    ).text
+        "div.carousel-inner._flex > div.photo-620x465.loaded > picture > img"
+    )
+
+    if image_url:
+        return image_url[0].get_attribute("src")
+
+    for i in range(2, 10):
+        picture_url = driver.find_elements(
+            By.CSS_SELECTOR,
+            f"div.carousel-inner._flex > div:nth-child({i}) > picture > img"
+        )
+
+        if picture_url:
+            return picture_url[0].get_attribute("src")
+
+    return None
 
 
 def get_images_count(driver: WebDriver) -> int:
@@ -49,7 +76,7 @@ def get_car_number(driver: WebDriver) -> str | None:
     return None
 
 
-def get_car_vin(driver: WebDriver) -> str:
+def get_car_vin(driver: WebDriver) -> str | None:
     car_vin = driver.find_elements(
         By.CLASS_NAME, "label-vin"
     )
@@ -57,9 +84,15 @@ def get_car_vin(driver: WebDriver) -> str:
     if car_vin:
         return car_vin[0].text
 
-    return driver.find_element(
-        By.CLASS_NAME, "vin-code"
-    ).text
+    else:
+        car_vin = driver.find_elements(
+            By.CLASS_NAME, "vin-code"
+        )
+
+        if car_vin:
+            return car_vin[0].text
+
+    return None
 
 
 def get_phone_number(driver: WebDriver) -> int:
